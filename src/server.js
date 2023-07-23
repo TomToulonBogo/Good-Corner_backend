@@ -1,6 +1,12 @@
 import Hapi from '@hapi/hapi';
+import * as admin from 'firebase-admin';
 import routes from './routes';
-import { db } from './database'
+import { db } from './database';
+import credentials from '../credentials.json';
+
+admin.initializeApp({
+    credential: admin.credential.cert(credentials),
+});
 
 let server
 
@@ -24,9 +30,7 @@ process.on('unhandledRejection', err => {
 
 process.on('SIGINT', async () => {
     console.log('Stopping server...');
-
     await server.stop({ timeout: 1000 });
-
     db.end();
     console.log('Server stopped.');
     process.exit(0);
